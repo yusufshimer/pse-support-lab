@@ -3,9 +3,9 @@
 - **Name:** Mohammed Yusuf
 - **Date submitted:** 14/11/2026
 - **Repository link:** https://github.com/yusufshimer/pse-support-lab
-- **Total time spent (real time):** 5:30 hrs (3:00 - 8:30)
+- **Total time spent (real time):** about 6 hrs (3:00 - 9:00)
 
-> Replies are drafts on the **exercise clock** (Monday 16 November 2026, Asia/Dubai). The `<hh:mm>` marks in the logs are for you to fill in with the exercise-clock time you would have done each step. The real times are in the time log at the end.
+> Replies are drafts on the **exercise clock** (Monday 16 November 2026, Asia/Dubai). Times in the investigation logs are exercise-clock times. The real times are in the time log at the end.. The real times are in the time log at the end.
 >
 > Evidence note: the first `make load` run (Incidents 1–5 reproduced, Prometheus graphs, restart and rate-limit counts) was done before I ran `make reset`. The batches shown in the portal screenshots come from the second run, after the reset. Both runs gave the same results.
 
@@ -28,7 +28,7 @@
 >
 > Thank you for writing. I understand your November file stayed on "Processing", you uploaded it again, and some invoices now say the document number already exists. With month-end close this week, I know you need a clear answer today.
 >
-> I'm Mohammed from Invoicely Support and I'm checking exactly which of your invoices were created and sent. **Please don't upload the file again for now**, because that is how those "already exists" messages appear. I'll write back by **10:30** with the status of each invoice and the safe way to send the rest.
+> I'm Mohammed from Invoicely Support and I'm checking exactly which of your invoices were created and sent. **Please don't upload the file again for now**, because that is how those "already exists" messages appear. I'll write back by **11:30** with the status of each invoice and the safe way to send the rest.
 >
 > Regards,
 > Mohammed Yusuf, Product Support Engineer
@@ -37,7 +37,7 @@
 
 - **Priority:** P2
 - **Why:** A subset of this customer's invoices is affected and they are at month-end close, but the portal is up and other customers can upload. Raise to P1 if no Oasis invoice reaches the ASP.
-- **SLA deadlines I am working to:** first response 10:05 (done 09:20); next update 10:30, then every 2 hours; resolution 17:05.
+- **SLA deadlines I am working to:** first response 10:05 (done 09:20); next update 11:30, then every 2 hours; resolution 17:05.
 
 ### Investigation log
 
@@ -50,7 +50,7 @@
 | 11:05 | Checked web logs | One 504 from the portal proxy (`evidence/01-proxy-timeout.txt`) |
 | 11:10 | Uploaded the same file again (first run, before reset) and queried the database | All 8 invoices Rejected by the portal with AE-BR-09: "Document number 'OBS-2611-00x' already exists for this seller with status 'Accepted'." (`evidence/01-oasis-duplicate.txt`) |
 | 11:15 | Read the code | The buyer lookup runs on every row, one after the other; the proxy timeout is 60 s; the API keeps working after the browser gives up |
-| 11:20 | Dead end: looked at whether the ASP was slow at submitting | ASP submit calls took milliseconds in the logs. The delay is in validation, not delivery |
+| 11:20 | Dead end: looked at whether the ASP was slow at submitting | ASP responses took a fraction of a second in the logs. The delay is in validation, not delivery |
 
 ### Root cause
 
@@ -292,7 +292,7 @@ Calculate totals from the rounded line amounts and VAT, and check BR-CO-15 in th
 ### Root cause
 
 - **What happened:** The portal sent the invoices to the ASP faster than the ASP's fair-use limit allows (8 at once, then 2 per second). The ASP answered "too many requests" (HTTP 429) for the rest. The portal doesn't handle that answer, so those invoices stay "Submitted" with no ASP reference and are never retried. The connector's 201 was correct; the failure is after the hand-off.
-- **Where:** `services/api/internal/submit/submit.go:105` (`submit`) and `:133` (`switch resp.StatusCode` has no 429 case; `Retry-After` is ignored); the status is set to Submitted before sending (`:112` area).
+- **Where:** `services/api/internal/submit/submit.go:105` (`submit`) and `:133` (`switch resp.StatusCode` has no 429 case; `Retry-After` is ignored); the status is set to Submitted before sending.
 - **Why it happens:** Four parallel workers send at full speed, and an unhandled status code leaves the invoice in its in-flight state forever.
 - **Evidence:** `evidence/04-sahara-submitted.png`, `04-rate-limit-count.txt` (753 throttled), `04-submitted-split.txt` (32 + 724 stuck), `load-output.txt` (Submitted 32 / Accepted 8).
 - **Confidence and open questions:** High. The numbers are close (753 throttled vs 756 stuck). The 3 extra stuck invoices could have been mid-send when the API restarted, but I did not verify that. Open: whether any "Submitted" invoice actually reached the hospital (to be checked with the ASP's document list for the sender).
@@ -363,7 +363,7 @@ Handle every unexpected status code explicitly (default → Failed). Respect `Re
 | Time (exercise clock) | What I checked / did | What I found |
 |---|---|---|
 | 13:35 | Replayed the Ghaf file | 4 invoices, **Rejected 4** by the portal (`evidence/05-date-error.png`) |
-| 13:45 | Looked at the Errors column | 4, 4, 6 and 2 errors: exactly 2 per source row, so both date columns are affected on every row `(confirmed on invoice GTC-118-HU6P: both the issue date and the payment due date show the AE-BR-04 error)`|
+| 13:45 | Looked at the Errors column | 4, 4, 6 and 2 errors: exactly 2 per source row, so both date columns are affected on every row (confirmed on invoice GTC-118-HU6P: both the issue date and the payment due date show the AE-BR-04 error) |
 | 13:50 | Source rows in the batch page | Dates are written as 13/11/2026, 14/11/2026, 15/11/2026 (day/month/year text) |
 | 14:00 | Read `sheet.go` `ParseDate` | Accepts only YYYY-MM-DD text or a real Excel date. Day/month text is rejected by rule AE-BR-04 |
 
@@ -401,7 +401,7 @@ I read all five first. Incident 2 went first because it is a production-wide P1 
 
 ### What I would do differently
 
-`I would check Prometheus's OOM counter first instead of trusting the OOMKilled flag from docker inspect, which was misleading because it resets after a restart. I would take screenshots while an error is on screen, and I would keep a timeline as I go instead of rebuilding it later. I would also reproduce each customer's problem on a fresh system before reading the code, so the code is confirming something I have already seen.
+I would check Prometheus's OOM counter first instead of trusting the OOMKilled flag from docker inspect, which was misleading because it resets after a restart. I would take screenshots while an error is on screen, and I would keep a timeline as I go instead of rebuilding it later. I would also reproduce each customer's problem on a fresh system before reading the code, so the code is confirming something I have already seen.
 
 ### What I learned / what I would need to learn
 
