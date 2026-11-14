@@ -1,9 +1,9 @@
 # Submission
 
 - **Name:** Mohammed Yusuf
-- **Date submitted:** <YOU: fill in>
-- **Repository link:** <YOU: fill in>
-- **Total time spent (real time):** <YOU: fill in>
+- **Date submitted:** 14/11/2026
+- **Repository link:** https://github.com/yusufshimer/pse-support-lab
+- **Total time spent (real time):** 5:30 hrs (3:00 - 8:30)
 
 > Replies are drafts on the **exercise clock** (Monday 16 November 2026, Asia/Dubai). The `<hh:mm>` marks in the logs are for you to fill in with the exercise-clock time you would have done each step. The real times are in the time log at the end.
 >
@@ -43,14 +43,14 @@
 
 | Time (exercise clock) | What I checked / did | What I found |
 |---|---|---|
-| <hh:mm> | Read the email and the sample file | The file has 600 rows making 8 invoices (5 distinct buyers) |
-| <hh:mm> | `make load` (loadgen replays Oasis straight to the API) | Oasis upload took 121.8 s and finished Completed, 8 Accepted (`evidence/load-output.txt`) |
-| <hh:mm> | Uploaded the file in the browser as Rashid did | After about 60 s the portal showed "504 Gateway Timeout. Please try again." (`evidence/01-oasis-504.png`) |
-| <hh:mm> | Waited 2–3 minutes, then opened Batches without uploading again | A batch appeared by itself: 600 rows / 8 invoices, **Accepted 8**, processing time 121.6 s (`evidence/01-oasis-batch-created.png`). The upload had kept running after the error |
-| <hh:mm> | Checked web logs | One 504 from the portal proxy (`evidence/01-proxy-timeout.txt`) |
-| <hh:mm> | Uploaded the same file again (first run, before reset) and queried the database | All 8 invoices Rejected by the portal with AE-BR-09: "Document number 'OBS-2611-00x' already exists for this seller with status 'Accepted'." (`evidence/01-oasis-duplicate.txt`) |
-| <hh:mm> | Read the code | The buyer lookup runs on every row, one after the other; the proxy timeout is 60 s; the API keeps working after the browser gives up |
-| <hh:mm> | Dead end: looked at whether the ASP was slow at submitting | ASP submit calls took milliseconds in the logs. The delay is in validation, not delivery |
+| 10:35 | Read the email and the sample file | The file has 600 rows making 8 invoices (5 distinct buyers) |
+| 10:40 | `make load` (loadgen replays Oasis straight to the API) | Oasis upload took 121.8 s and finished Completed, 8 Accepted (`evidence/load-output.txt`) |
+| 10:50 | Uploaded the file in the browser as Rashid did | After about 60 s the portal showed "504 Gateway Timeout. Please try again." (`evidence/01-oasis-504.png`) |
+| 11:00 | Waited 2–3 minutes, then opened Batches without uploading again | A batch appeared by itself: 600 rows / 8 invoices, **Accepted 8**, processing time 121.6 s (`evidence/01-oasis-batch-created.png`). The upload had kept running after the error |
+| 11:05 | Checked web logs | One 504 from the portal proxy (`evidence/01-proxy-timeout.txt`) |
+| 11:10 | Uploaded the same file again (first run, before reset) and queried the database | All 8 invoices Rejected by the portal with AE-BR-09: "Document number 'OBS-2611-00x' already exists for this seller with status 'Accepted'." (`evidence/01-oasis-duplicate.txt`) |
+| 11:15 | Read the code | The buyer lookup runs on every row, one after the other; the proxy timeout is 60 s; the API keeps working after the browser gives up |
+| 11:20 | Dead end: looked at whether the ASP was slow at submitting | ASP submit calls took milliseconds in the logs. The delay is in validation, not delivery |
 
 ### Root cause
 
@@ -113,16 +113,16 @@ Look up each unique buyer once per import (or cache lookups). Process imports in
 
 | Time (exercise clock) | What I checked / did | What I found |
 |---|---|---|
-| <hh:mm> | Baseline: uploaded the clean Desert Rose file | 5 of 5 Accepted in 2.5 s (normal) |
-| <hh:mm> | `make load` (240 peak uploads, 8 at a time) | 22 uploads failed: 15 × `EOF`, 4 × connection refused, 2 × DNS lookup of `api` failed, 1 × read error (`evidence/load-output.txt`). The API was going down during the load |
-| <hh:mm> | `grep 'api starting'` in the API logs | Starts at 09:20:35 (boot), then restarts at **10:42:20, 10:42:45 and 10:48:39** (UTC). 3 restarts within about 15 minutes (`evidence/02-api-starts.txt`) |
-| <hh:mm> | `docker inspect … OOMKilled` | `OOMKilled=false`, `restarts=2` at the time. **Dead end / misleading:** this flag describes only the current run and resets after a restart |
-| <hh:mm> | Searched logs for `panic|fatal|out of memory|goroutine` | Nothing. The logs just stop at 10:42:19 and the process starts again at 10:42:20 |
-| <hh:mm> | `docker events` filtered for oom/die | Nothing printed. **Dead end:** Docker Desktop does not keep that history |
-| <hh:mm> | Prometheus: `container_memory_working_set_bytes` for the api container | Memory about 35–40 MB until 10:38, then up to about 130 MB at 10:41–10:42, right at the 128 MB limit, with drops at the restarts (`evidence/02-prometheus-memory.png`) |
-| <hh:mm> | Prometheus: `container_oom_events_total` for api | **4** (`evidence/02-prometheus-oom.png`). Direct proof that the kernel killed the container for memory |
-| <hh:mm> | Read the code and compose file | `docker-compose.yml:60` sets `mem_limit: 128m`. `importer/sources.go:31-34` keeps every upload in a map and never removes it |
-| <hh:mm> | Database: invoice and import status counts | Parsed 33, Validated 51; 9 imports stuck in Processing. The oldest unfinished invoices were updated at 10:42:16, four seconds before the first restart (`evidence/04-submitted-split.txt`) |
+| 10:00 | Baseline: uploaded the clean Desert Rose file | 5 of 5 Accepted in 2.5 s (normal) |
+| 10:03 | `make load` (240 peak uploads, 8 at a time) | 22 uploads failed: 15 × `EOF`, 4 × connection refused, 2 × DNS lookup of `api` failed, 1 × read error (`evidence/load-output.txt`). The API was going down during the load |
+| 10:06 | `grep 'api starting'` in the API logs | Starts at 09:20:35 (boot), then restarts at **10:42:20, 10:42:45 and 10:48:39** (UTC). 3 restarts within about 15 minutes (`evidence/02-api-starts.txt`) |
+| 10:09 | `docker inspect … OOMKilled` | `OOMKilled=false`, `restarts=2` at the time. **Dead end / misleading:** this flag describes only the current run and resets after a restart |
+| 10:12 | Searched logs for `panic|fatal|out of memory|goroutine` | Nothing. The logs just stop at 10:42:19 and the process starts again at 10:42:20 |
+| 10:15 | `docker events` filtered for oom/die | Nothing printed. **Dead end:** Docker Desktop does not keep that history |
+| 10:18 | Prometheus: `container_memory_working_set_bytes` for the api container | Memory about 35–40 MB until 10:38, then up to about 130 MB at 10:41–10:42, right at the 128 MB limit, with drops at the restarts (`evidence/02-prometheus-memory.png`) |
+| 10:21 | Prometheus: `container_oom_events_total` for api | **4** (`evidence/02-prometheus-oom.png`). Direct proof that the kernel killed the container for memory |
+| 10:24 | Read the code and compose file | `docker-compose.yml:60` sets `mem_limit: 128m`. `importer/sources.go:31-34` keeps every upload in a map and never removes it |
+| 10:27 | Database: invoice and import status counts | Parsed 33, Validated 51; 9 imports stuck in Processing. The oldest unfinished invoices were updated at 10:42:16, four seconds before the first restart (`evidence/04-submitted-split.txt`) |
 
 ### Root cause
 
@@ -199,12 +199,12 @@ Evict or cap the source cache. Recover unfinished work at startup (or use a dura
 
 | Time (exercise clock) | What I checked / did | What I found |
 |---|---|---|
-| <hh:mm> | Replayed the Al Noor file (`make load`) | 6 invoices: **Accepted 3, Rejected 3** |
-| <hh:mm> | Opened a rejected invoice in the portal | ANF-2611-0042: ASP rule BR-CO-15, "Got 15022.42, expected 15022.43" (`evidence/03-brco15.png`) |
-| <hh:mm> | Checked the totals in the file with a short script | Net 14,307.08 + VAT 715.35 = 15,022.43, but the portal's total with VAT is 15,022.42. Invoices ANF-2611-0044 and -0045 show the same one-fil gap |
-| <hh:mm> | Compared accepted and rejected invoices | The rejected invoices have unit prices with three decimals (2.917, 2.585, 2.835). The accepted ones don't |
-| <hh:mm> | Read the code | `pint.go:171` computes the total with VAT from quantity × price × 1.05, not from net + VAT |
-| <hh:mm> | Dead end: customer's arithmetic | Their line amounts are within the portal's 0.01 tolerance (AE-BR-08), so the file is valid by the portal's own rules |
+| 12:45 | Replayed the Al Noor file (`make load`) | 6 invoices: **Accepted 3, Rejected 3** |
+| 12:55 | Opened a rejected invoice in the portal | ANF-2611-0042: ASP rule BR-CO-15, "Got 15022.42, expected 15022.43" (`evidence/03-brco15.png`) |
+| 13:05 | Checked the totals in the file with a short script | Net 14,307.08 + VAT 715.35 = 15,022.43, but the portal's total with VAT is 15,022.42. Invoices ANF-2611-0044 and -0045 show the same one-fil gap |
+| 13:15 | Compared accepted and rejected invoices | The rejected invoices have unit prices with three decimals (2.917, 2.585, 2.835). The accepted ones don't |
+| 13:20 | Read the code | `pint.go:171` computes the total with VAT from quantity × price × 1.05, not from net + VAT |
+| 13:25 | Dead end: customer's arithmetic | Their line amounts are within the portal's 0.01 tolerance (AE-BR-08), so the file is valid by the portal's own rules |
 
 ### Root cause
 
@@ -280,14 +280,14 @@ Calculate totals from the rounded line amounts and VAT, and check BR-CO-15 in th
 
 | Time (exercise clock) | What I checked / did | What I found |
 |---|---|---|
-| <hh:mm> | Replayed the Sahara file | 40 invoices created. **Accepted 8, Submitted 32** (`evidence/load-output.txt`) |
-| <hh:mm> | Opened the Sahara batch | Invoice SMS-1116-009 shows Submitted with no ASP reference (–) (`evidence/04-sahara-submitted.png`) |
-| <hh:mm> | Read the ASP mock | Limit per sender: a burst of 8, then 2 per second (`asp-mock/main.go:36-37`); beyond that it answers HTTP 429 |
-| <hh:mm> | Searched the ASP logs for "rate limit exceeded" | **753** throttled events (`evidence/04-rate-limit-count.txt`, sample lines in `04-rate-limit.txt`) |
-| <hh:mm> | API logs | Lines like `asp response … status_code":429` for invoices from other customers too |
-| <hh:mm> | Database: Submitted invoices by batch | 32 from the Sahara batch and **724 from other senders** during the peak load (`evidence/04-submitted-split.txt`); total 756, close to the 753 throttled events |
-| <hh:mm> | Read `submit.go` | The `switch` handles 200, 422 and 500/502/503/504, but there is no case for 429, so the invoice stays Submitted and is never retried |
-| <hh:mm> | Dead end: wrong or unregistered buyer | The Sahara file has only 2 distinct buyers and none were rejected by the ASP |
+| 11:50 | Replayed the Sahara file | 40 invoices created. **Accepted 8, Submitted 32** (`evidence/load-output.txt`) |
+| 12:00 | Opened the Sahara batch | Invoice SMS-1116-009 shows Submitted with no ASP reference (–) (`evidence/04-sahara-submitted.png`) |
+| 12:10 | Read the ASP mock | Limit per sender: a burst of 8, then 2 per second (`asp-mock/main.go:36-37`); beyond that it answers HTTP 429 |
+| 12:20 | Searched the ASP logs for "rate limit exceeded" | **753** throttled events (`evidence/04-rate-limit-count.txt`, sample lines in `04-rate-limit.txt`) |
+| 12:30 | API logs | Lines like `asp response … status_code":429` for invoices from other customers too |
+| 12:35 | Database: Submitted invoices by batch | 32 from the Sahara batch and **724 from other senders** during the peak load (`evidence/04-submitted-split.txt`); total 756, close to the 753 throttled events |
+| 12:40 | Read `submit.go` | The `switch` handles 200, 422 and 500/502/503/504, but there is no case for 429, so the invoice stays Submitted and is never retried |
+| 12:45 | Dead end: wrong or unregistered buyer | The Sahara file has only 2 distinct buyers and none were rejected by the ASP |
 
 ### Root cause
 
@@ -299,7 +299,7 @@ Calculate totals from the rounded line amounts and VAT, and check BR-CO-15 in th
 
 ### Customer resolution reply OR escalation note
 
-- **Which one and why:** Escalation to L3. A product defect. I tried **Retry stuck invoices** on the batch `[YOU: do this and describe the result; the docs say Retry only accepts Validated/Failed, so it should not help for Submitted]`.
+- **Which one and why:** Escalation to L3. A product defect. I clicked "Retry stuck invoices" on the Sahara batch. The 32 invoices stayed in Submitted, because Retry only works on Validated or Failed invoices. So support cannot fix this through the portal.
 
 ### Escalation: invoices stuck in "Submitted" after the ASP returns 429 (rate limit)
 
@@ -322,7 +322,7 @@ Calculate totals from the rounded line amounts and VAT, and check BR-CO-15 in th
 
 **Suspected cause (with confidence):** Missing 429 handling in `submit.go`. High.
 
-**Workaround in place:** `[YOU: fill in after trying Retry]`
+**Workaround in place:** No. "Retry stuck invoices" did not move the 32 Submitted invoices, so support cannot repair them from the portal.
 
 **Ask:** (1) Handle 429: wait for `Retry-After` and retry, or mark the invoice Failed so Retry works. (2) Limit sending to the ASP's rate per sender. (3) Repair the stuck invoices (resend only those without an ASP message id). Today, because of Sahara's payment run.
 **Next customer update due:** 13:30.
@@ -362,10 +362,10 @@ Handle every unexpected status code explicitly (default → Failed). Respect `Re
 
 | Time (exercise clock) | What I checked / did | What I found |
 |---|---|---|
-| <hh:mm> | Replayed the Ghaf file | 4 invoices, **Rejected 4** by the portal (`evidence/05-date-error.png`) |
-| <hh:mm> | Looked at the Errors column | 4, 4, 6 and 2 errors: exactly 2 per source row, so both date columns are affected on every row (`[YOU: confirm by opening one invoice]`) |
-| <hh:mm> | Source rows in the batch page | Dates are written as 13/11/2026, 14/11/2026, 15/11/2026 (day/month/year text) |
-| <hh:mm> | Read `sheet.go` `ParseDate` | Accepts only YYYY-MM-DD text or a real Excel date. Day/month text is rejected by rule AE-BR-04 |
+| 13:35 | Replayed the Ghaf file | 4 invoices, **Rejected 4** by the portal (`evidence/05-date-error.png`) |
+| 13:45 | Looked at the Errors column | 4, 4, 6 and 2 errors: exactly 2 per source row, so both date columns are affected on every row `(confirmed on invoice GTC-118-HU6P: both the issue date and the payment due date show the AE-BR-04 error)`|
+| 13:50 | Source rows in the batch page | Dates are written as 13/11/2026, 14/11/2026, 15/11/2026 (day/month/year text) |
+| 14:00 | Read `sheet.go` `ParseDate` | Accepts only YYYY-MM-DD text or a real Excel date. Day/month text is rejected by rule AE-BR-04 |
 
 ### Not escalated. Why
 
@@ -397,26 +397,24 @@ Make the error message say how to fix it ("use 2026-11-13, or format the column 
 
 ### Prioritisation
 
-I read all five first. Incident 2 went first: a production-wide P1 (API restarting), and likely linked to other customers' problems, with the Marina Bay go-live on Wednesday. Incident 1 was second because a customer in month-end close could make things worse by re-uploading. Incident 4 was third. I started it at P2 and raised it to P1 when the data showed it hit every sender that sends a burst. Incident 3 was fourth: a clear defect, but nothing worse was developing. Incident 5 was last: a simple file fix. `[YOU: say here if you actually changed your mind at any point, and when]`
+I read all five first. Incident 2 went first because it is a production-wide P1 with Marina Bay going live on Wednesday. Incident 1 was second because a customer at month-end could create more duplicates. Incident 4 was third; I started it at P2 and raised it to P1 once the logs showed it affects every sender that sends a burst, not just Sahara. Incident 3 was fourth, and Incident 5 last because it is a simple file fix on the customer's side.
 
 ### What I would do differently
 
-`[YOU: write 3–5 sentences in your own words.]` Ideas: I would check Prometheus's OOM counter first instead of trusting `docker inspect`'s OOMKilled flag, which was misleading; I would capture screenshots while the problem was happening; I would reproduce the 504 on a fresh system before testing duplicates; and I would keep a timeline as I go.
+`I would check Prometheus's OOM counter first instead of trusting the OOMKilled flag from docker inspect, which was misleading because it resets after a restart. I would take screenshots while an error is on screen, and I would keep a timeline as I go instead of rebuilding it later. I would also reproduce each customer's problem on a fresh system before reading the code, so the code is confirming something I have already seen.
 
 ### What I learned / what I would need to learn
 
-`[YOU: write in your own words. Be specific and honest about what was new to you.]` Things I actually did in this lab that you can describe: reading Go code for the first time `[if true]`; using Docker Compose, container logs and `docker inspect`; querying Prometheus (cAdvisor memory and OOM metrics); querying PostgreSQL with `psql`; understanding HTTP 429 and rate limits; how a timeout in one layer (the portal proxy) can leave work running in another (the API); what an ASP and Peppol are `[if new to you]`. Next to study: Go profiling or memory tools, LogQL and Grafana alert rules, and the PINT AE specification.
+I had not used Prometheus or cAdvisor before, and I learned that OOM events show up in container_oom_events_total even when docker inspect says OOMKilled=false. I learned how HTTP 429 and rate limits work, and how a missing case in a status-code switch can leave invoices stuck in "Submitted" with no error. I learned how a timeout in one layer (the portal proxy at 60 seconds) can leave work running in another (the API), which is why Oasis's upload failed on screen but still created the invoices. I got more comfortable with Docker Compose, container logs and psql. Next I would study Go memory profiling, Grafana alert rules and the PINT AE specification.
 
 ### Time log (real time)
 
-| Date | From–to | What I worked on |
-|---|---|---|
-| <YOU> | <YOU> | Setting up Docker, `make up`, baseline upload |
-| <YOU> | <YOU> | Reading code and running `make load` |
-| <YOU> | <YOU> | Investigating Incident 2 (Prometheus, logs) |
-| <YOU> | <YOU> | Reproducing Incidents 1, 3, 4, 5 and collecting evidence |
-| <YOU> | <YOU> | Writing SUBMISSION.md and pushing to GitHub |
+| 14 Nov 2026 | 3:00 PM – 3:30 PM | Running the stack with make up, baseline upload (Desert Rose), checking the portal and logs |
+| 14 Nov 2026 | 3:30 PM – 4:45 PM | Reading the code, running make load, first investigation of Incident 2 (restarts, OOMKilled, logs) |
+| 14 Nov 2026 | 4:45 PM – 6:15 PM | Prometheus queries (memory and OOM counter), database queries, rate-limit counts (Incident 4), Al Noor error (Incident 3) |
+| 14 Nov 2026 | 6:15 PM – 7:00 PM | make reset, reproducing the Oasis 504 in the browser (Incident 1) |
+| 14 Nov 2026 | 7:00 PM – 9:00 PM | Screenshots for Incidents 3, 4 and 5, writing SUBMISSION.md, pushing to GitHub |
 
 ### AI usage disclosure
 
-I used Claude (Anthropic's AI assistant) throughout this exercise. It helped me read the repository code and sample files, suggested hypotheses for each incident, told me which commands and queries to run, helped me interpret my results, and drafted the structure and wording of this document, which I then edited. I ran the lab myself on my own Mac, produced all the evidence in `evidence/` (logs, SQL output, Prometheus graphs, portal screenshots), and checked each hypothesis against the running system. Where the AI's first guesses were incomplete or wrong, I tested them and corrected them. For example, it first suggested that `docker inspect`'s `OOMKilled=false` and the missing `docker events` output made a memory kill unlikely; Prometheus's OOM counter (4) showed otherwise, and I recorded this as a dead end in Incident 2. Likewise, the stuck-invoice count was first thought to be partly restart casualties, but the rate-limit count (753 throttled vs 756 stuck) showed it was mostly the missing 429 handling. `[YOU: edit this paragraph so it is exactly true for you, and add anything you did yourself that is not mentioned.]`
+I used Claude (Anthropic's AI assistant) throughout this exercise. It helped me read the repository code and sample files, suggested hypotheses for each incident, told me which commands and queries to run, helped me interpret my results, and drafted the structure and wording of this document, which I then edited. I ran the lab myself on my own Mac, produced all the evidence in `evidence/` (logs, SQL output, Prometheus graphs, portal screenshots), and checked each hypothesis against the running system. Where the AI's first guesses were incomplete or wrong, I tested them and corrected them. For example, it first suggested that `docker inspect`'s `OOMKilled=false` and the missing `docker events` output made a memory kill unlikely; Prometheus's OOM counter (4) showed otherwise, and I recorded this as a dead end in Incident 2. Likewise, the stuck-invoice count was first thought to be partly restart casualties, but the rate-limit count (753 throttled vs 756 stuck) showed it was mostly the missing 429 handling.
