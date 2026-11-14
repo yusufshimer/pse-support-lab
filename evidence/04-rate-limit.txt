@@ -1,0 +1,5 @@
+asp-mock-1  | {"time":"2026-11-14T10:39:58.516754926Z","level":"WARN","msg":"rate limit exceeded","sender":"0235:1006453719","retry_after_s":1}
+asp-mock-1  | {"time":"2026-11-14T10:39:58.517275926Z","level":"WARN","msg":"rate limit exceeded","sender":"0235:1006453719","retry_after_s":1}
+asp-mock-1  | {"time":"2026-11-14T10:39:58.518168218Z","level":"WARN","msg":"rate limit exceeded","sender":"0235:1006453719","retry_after_s":1}
+asp-mock-1  | {"time":"2026-11-14T10:39:58.51897726Z","level":"WARN","msg":"rate limit exceeded","sender":"0235:1006453719","retry_after_s":1}
+asp-mock-1  | {"time":"2026-11-14T10:39:58.519207968Z","level":"WARN","msg":"rate limit exceeded","sender":"0235:1006453719","retry_after_s":1}

@@ -1,0 +1,5 @@
+api-1  | {"time":"2026-11-14T09:20:35.252818847Z","level":"INFO","msg":"api starting","addr":":8080","asp_url":"http://asp-mock:8090"}
+api-1  | {"time":"2026-11-14T10:42:20.259958297Z","level":"INFO","msg":"api starting","addr":":8080","asp_url":"http://asp-mock:8090"}
+api-1  | {"time":"2026-11-14T10:42:45.645356212Z","level":"INFO","msg":"api starting","addr":":8080","asp_url":"http://asp-mock:8090"}
+api-1  | {"time":"2026-11-14T10:48:39.3434055Z","level":"INFO","msg":"api starting","addr":":8080","asp_url":"http://asp-mock:8090"}
+restarts=3

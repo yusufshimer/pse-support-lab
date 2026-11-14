@@ -1,0 +1,14 @@
+          created_at           | invoice_number |  status  | rejected_by |   rule   |                                        message                                        
+-------------------------------+----------------+----------+-------------+----------+---------------------------------------------------------------------------------------
+ 2026-11-14 11:19:33.250108+00 | OBS-2611-006   | Rejected | portal      | AE-BR-09 | Document number 'OBS-2611-006' already exists for this seller with status 'Accepted'.
+ 2026-11-14 11:19:33.250108+00 | OBS-2611-002   | Rejected | portal      | AE-BR-09 | Document number 'OBS-2611-002' already exists for this seller with status 'Accepted'.
+ 2026-11-14 11:19:33.250108+00 | OBS-2611-007   | Rejected | portal      | AE-BR-09 | Document number 'OBS-2611-007' already exists for this seller with status 'Accepted'.
+ 2026-11-14 11:19:33.250108+00 | OBS-2611-008   | Rejected | portal      | AE-BR-09 | Document number 'OBS-2611-008' already exists for this seller with status 'Accepted'.
+ 2026-11-14 11:19:33.250108+00 | OBS-2611-004   | Rejected | portal      | AE-BR-09 | Document number 'OBS-2611-004' already exists for this seller with status 'Accepted'.
+ 2026-11-14 11:19:33.250108+00 | OBS-2611-001   | Rejected | portal      | AE-BR-09 | Document number 'OBS-2611-001' already exists for this seller with status 'Accepted'.
+ 2026-11-14 11:19:33.250108+00 | OBS-2611-003   | Rejected | portal      | AE-BR-09 | Document number 'OBS-2611-003' already exists for this seller with status 'Accepted'.
+ 2026-11-14 11:19:33.250108+00 | OBS-2611-005   | Rejected | portal      | AE-BR-09 | Document number 'OBS-2611-005' already exists for this seller with status 'Accepted'.
+ 2026-11-14 11:13:18.871514+00 | OBS-2611-005   | Rejected | portal      | AE-BR-09 | Document number 'OBS-2611-005' already exists for this seller with status 'Accepted'.
+ 2026-11-14 11:13:18.871514+00 | OBS-2611-001   | Rejected | portal      | AE-BR-09 | Document number 'OBS-2611-001' already exists for this seller with status 'Accepted'.
+(10 rows)
+
