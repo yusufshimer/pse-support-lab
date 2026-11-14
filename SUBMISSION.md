@@ -5,8 +5,7 @@
 - **Repository link:** https://github.com/yusufshimer/pse-support-lab
 - **Total time spent (real time):** about 6 hrs (3:00 - 9:00)
 
-> Replies are drafts on the **exercise clock** (Monday 16 November 2026, Asia/Dubai). Times in the investigation logs are exercise-clock times. The real times are in the time log at the end.. The real times are in the time log at the end.
->
+> Replies are drafts on the **exercise clock** (Monday 16 November 2026, Asia/Dubai). Times in the investigation logs are exercise-clock times. The real times are in the time log at the end.
 > Evidence note: the first `make load` run (Incidents 1–5 reproduced, Prometheus graphs, restart and rate-limit counts) was done before I ran `make reset`. The batches shown in the portal screenshots come from the second run, after the reset. Both runs gave the same results.
 
 - **Items I fully investigated, and why I chose them:** Incidents 2, 1, 4 and 3. Incident 2 is a production-wide P1 with a Wednesday go-live. Incident 1 is a month-end customer at risk of creating duplicates. Incident 4 turned out to affect every sender, not just Sahara. Incident 3 is a clear product defect with an auditor waiting. Incident 5 is a file-format issue on the customer's side with a quick fix, so it is last.
@@ -409,6 +408,8 @@ I had not used Prometheus or cAdvisor before, and I learned that OOM events show
 
 ### Time log (real time)
 
+| Date | From–to | What I worked on |
+|---|---|---|
 | 14 Nov 2026 | 3:00 PM – 3:30 PM | Running the stack with make up, baseline upload (Desert Rose), checking the portal and logs |
 | 14 Nov 2026 | 3:30 PM – 4:45 PM | Reading the code, running make load, first investigation of Incident 2 (restarts, OOMKilled, logs) |
 | 14 Nov 2026 | 4:45 PM – 6:15 PM | Prometheus queries (memory and OOM counter), database queries, rate-limit counts (Incident 4), Al Noor error (Incident 3) |
